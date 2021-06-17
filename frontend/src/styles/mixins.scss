@@ -1,0 +1,26 @@
+@import "styles/variables";
+@import "styles/functions";
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-space-between {
+  @include flex-center;
+  justify-content: space-between;
+}
+
+@mixin flex-vertical-align {
+  display: flex;
+  align-items: center;
+}
+
+@mixin box-shadow($color: #000000) {
+  box-shadow: 0 2px 1px -1px rgba($color,0.2), 0px 1px 1px 0px rgba($color,0.14), 0px 1px 3px 0px rgba($color,0.12);
+}
+
+@mixin box-shadow-hover($color: #000000) {
+  box-shadow: 3px 5px 3px -3px rgba(0, 0, 0, 0.2), 3px 3px 3px 0px rgba(0, 0, 0, 0.14), 3px 3px 5px 0px rgba(0, 0, 0, 0.12);
+}

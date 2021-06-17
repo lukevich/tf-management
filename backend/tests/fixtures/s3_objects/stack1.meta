@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "build_url": "https://build_url/3/",
+    "update_ts": 1619543684016,
+    "git_branch_name": "develop",
+    "commit_msg": "fix3"
+  },
+  "history": [
+    {
+      "build_url": "https://build_url/3/",
+      "update_ts": 1619543684016,
+      "git_branch_name": "develop",
+      "commit_msg": "fix3"
+    },
+    {
+      "build_url": "https://build_url/2/",
+      "update_ts": 1619457280882,
+      "git_branch_name": "develop",
+      "commit_msg": "fix2"
+    },
+    {
+      "build_url": "https://build_url/1/",
+      "update_ts": 1616519690008,
+      "git_branch_name": "develop",
+      "commit_msg": "fix1"
+    }
+  ]
+}

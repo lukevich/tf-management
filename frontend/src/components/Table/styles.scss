@@ -1,0 +1,73 @@
+@import "../../styles/functions";
+@import "../../styles/mixins";
+@import "../../styles/variables";
+
+.table {
+  margin-bottom: 0;
+
+  &__holder {
+    @include box-shadow;
+    border: 1px solid #dee2e6;
+    border-radius: setUnit(4);
+    margin-bottom: setUnit(20);
+  }
+
+  thead {
+    tr {
+      border-bottom: 1px solid #dee2e6;
+
+      th {
+        border: none;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #dee2e6;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background-color: $info-color;
+        color: $main-white-color;
+
+        .link {
+          color: $main-white-color;
+        }
+      }
+    }
+
+    td {
+      border: none;
+    }
+
+  }
+
+  .select {
+    width: setUnit(50);
+
+    .checkbox {
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+  .row {
+    cursor: pointer;
+  }
+
+  .cell {
+    padding: 0 !important;
+
+    .link {
+      display: block;
+      width: 100%;
+      padding: setUnit(12);
+      text-decoration: none;
+      color: $dark-color;
+    }
+  }
+}

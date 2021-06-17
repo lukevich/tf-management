@@ -1,0 +1,15 @@
+@import "../../../../../../styles/functions";
+@import "../../../../../../styles/variables";
+@import "../../../../../../styles/mixins";
+
+.list__group {
+  &:last-child {
+    .toggle {
+      border-bottom: 1px solid rgba(0,0,0,.125);
+    }
+  }
+
+  .items {
+    margin-bottom: setUnit(5);
+  }
+}

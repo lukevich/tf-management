@@ -1,0 +1,25 @@
+@import "../../styles/mixins";
+@import "../../styles/variables";
+
+@mixin hover {
+  color: $main-white-color;
+  background-color: $info-color;
+  border-color: $info-color;
+}
+
+.tabs {
+  border-bottom: none;
+
+  .tab {
+    font-weight: 500;
+    color: $info-color;
+
+    &.active {
+      @include hover;
+    }
+
+    &:hover {
+      @include hover;
+    }
+  }
+}

@@ -1,0 +1,8 @@
+@import "../../../../styles/variables";
+@import "../../../../styles/mixins";
+
+.card__header {
+  @include box-shadow;
+  background-color: $info-color;
+  color: $main-white-color;
+}

@@ -1,0 +1,24 @@
+@import "../../../styles/variables";
+@import "../../../styles/functions";
+@import "../../../styles/mixins";
+
+.refresh {
+  transition: all .3s linear;
+
+  &__wrapper {
+    @include box-shadow;
+    border: 1px solid $border-color;
+    padding: setUnit(5) setUnit(15);
+    cursor: pointer;
+    width: setUnit(52);
+    border-radius: setUnit(4);
+    @include flex-center;
+
+    &:hover {
+
+      .refresh {
+        transform: rotate(360deg);
+      }
+    }
+  }
+}

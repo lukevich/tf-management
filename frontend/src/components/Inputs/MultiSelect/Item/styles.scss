@@ -1,0 +1,26 @@
+@import "../../../../styles/functions";
+@import "../../../../styles/mixins";
+
+.item {
+  @include flex-vertical-align;
+
+  input,
+  span {
+    vertical-align: middle;
+    margin: 0;
+  }
+
+  span {
+    display: inline-block;
+    padding-left: setUnit(5);
+  }
+
+  .checkbox {
+    position: relative;
+    top: setUnit(1)
+  }
+
+  &.disabled {
+    opacity: 0.5;
+  }
+}

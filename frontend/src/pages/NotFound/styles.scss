@@ -1,0 +1,6 @@
+@import "../../styles/mixins";
+
+.notfound {
+  height: 100vh;
+  @include flex-center;
+}

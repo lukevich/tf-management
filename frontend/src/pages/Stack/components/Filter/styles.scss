@@ -1,0 +1,21 @@
+@import "../../../../styles/mixins";
+@import "../../../../styles/functions";
+@import "../../../../styles/variables";
+
+.search {
+  width: setUnit(400);
+
+  &__cell {
+      padding-left: 0;
+  }
+
+  &__row {
+    width: setUnit(400);
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  @media screen and (max-width: $mobile) {
+    width: 100%;
+  }
+}

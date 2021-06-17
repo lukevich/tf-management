@@ -1,0 +1,67 @@
+{
+  "name": "base_location-stack1-env_id",
+  "short_name": "base_location-stack1",
+  "region": "region",
+  "env_id": "env_id",
+  "resources": [
+    {
+      "name": "deleteme-example",
+      "type": "aws_vpc",
+      "arn": "arn:aws:ec2:us-example-example:id:vpc/vpc-example",
+      "id": "vpc-example",
+      "url": "https://console.aws.amazon.com/vpc/home?region=region&#vpcs:search=deleteme-example"
+    },
+    {
+      "name": "deleteme-example-1",
+      "type": "aws_subnet",
+      "arn": "arn:aws:ec2:us-example-example:id:subnet/subnet-example-1",
+      "id": "subnet-example-1",
+      "url": "https://console.aws.amazon.com/vpc/home?region=region&#subnets:search=deleteme-example-1"
+    },
+    {
+      "name": "deleteme-example-2",
+      "type": "aws_subnet",
+      "arn": "arn:aws:ec2:us-example-example:id:subnet/subnet-example-2",
+      "id": "subnet-example-2",
+      "url": "https://console.aws.amazon.com/vpc/home?region=region&#subnets:search=deleteme-example-2"
+    }
+  ],
+  "variables": {
+    "env_id": "dev",
+    "region": "us-east-1",
+    "vpc_cidr": "10.0.0.0/16",
+    "private_subnet_cidr_blocks": "10.0.0.0/18, 10.0.64.0/18",
+    "public_subnet_cidr_blocks": "10.0.192.0/24, 10.0.193.0/24",
+    "single_nat_gateway": "true"
+  },
+  "outputs": {
+    "example1": "example1",
+    "example2": "example2"
+  },
+  "metadata": {
+    "build_url": "https://build_url/3/",
+    "update_ts": 1619543684016,
+    "git_branch_name": "develop",
+    "commit_msg": "fix3"
+  },
+  "history": [
+    {
+      "build_url": "https://build_url/3/",
+      "update_ts": 1619543684016,
+      "git_branch_name": "develop",
+      "commit_msg": "fix3"
+    },
+    {
+      "build_url": "https://build_url/2/",
+      "update_ts": 1619457280882,
+      "git_branch_name": "develop",
+      "commit_msg": "fix2"
+    },
+    {
+      "build_url": "https://build_url/1/",
+      "update_ts": 1616519690008,
+      "git_branch_name": "develop",
+      "commit_msg": "fix1"
+    }
+  ]
+}
