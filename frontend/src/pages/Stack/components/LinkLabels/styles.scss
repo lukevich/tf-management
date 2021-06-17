@@ -1,0 +1,52 @@
+@import "../../../../styles/variables";
+@import "../../../../styles/functions";
+@import "../../../../styles/mixins";
+
+.actions {
+  display: flex;
+  align-items: center;
+  margin-left: setUnit(15);
+
+  .copy,
+  .link {
+    svg {
+      fill: $info-color;
+    }
+  }
+
+  .copy {
+    display: flex;
+    align-items: center;
+    position: relative;
+    top: setUnit(1);
+
+    &:hover {
+      position: relative;
+      top: setUnit(2);
+      opacity: .9;
+    }
+
+    svg {
+      width: setUnit(20);
+      height: setUnit(20);
+    }
+  }
+
+  .link {
+    display: flex;
+    align-items: center;
+    margin-left: setUnit(10);
+    position: relative;
+    top: setUnit(1);
+
+    &:hover {
+      position: relative;
+      top: 2px;
+    }
+
+    svg {
+      width: setUnit(22);
+      height: setUnit(22);
+    }
+  }
+}

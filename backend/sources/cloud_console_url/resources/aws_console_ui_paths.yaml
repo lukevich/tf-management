@@ -1,0 +1,38 @@
+# This file contains aws resources URL templates
+
+# S3
+aws_s3_bucket: s3/home?region={region}&bucket={name}
+
+# ElastiCache
+aws_elasticache_replication_group: elasticache/home?region={region}#redis-shards:redis-id={name}
+
+# VPC
+aws_security_group: vpc/home?region={region}&#SecurityGroups:search={name}
+aws_subnet: vpc/home?region={region}&#subnets:search={name}
+aws_vpc: vpc/home?region={region}&#vpcs:search={name}
+aws_nat_gateway: vpc/home?region={region}&#NatGateways:search={name}
+aws_route_table: vpc/home?region={region}&#RouteTables:search={name}
+aws_internet_gateway: vpc/home?region={region}&#igws:search={name}
+
+# ECS
+aws_ecs_cluster: ecs/home?region={region}#/clusters/{name}/services
+aws_ecs_service: ecs/home?region={region}#/clusters/{name}/services/{name}
+aws_ecs_task_definition: ecs/home?region={region}#/taskDefinitions/{name}
+aws_ecr_repository: ecr/repositories/{name}/?region={region}
+
+# EC2
+aws_lb: ec2/home?region={region}#LoadBalancers:search={name}
+aws_instance: ec2/home?region={region}#Instances:search={name}
+aws_autoscaling_group: ec2autoscaling/home?region={region}#/details/{name}
+aws_launch_configuration: ec2autoscaling/home?region={region}#/lc?launchConfigurationName={name}
+
+# CloudFront
+aws_cloudfront_distribution: cloudfront/home?region={region}#distribution-settings:{name}
+
+# IAM
+aws_iam_role: iam/home?region={region}#roles/{name}
+
+# CloudWatch
+aws_cloudwatch_dashboard: cloudwatch/home?region={region}#dashboards:name={name}
+aws_cloudwatch_log_group: cloudwatch/home?region={region}#logsV2:log-groups/log-group/{name}
+aws_cloudwatch_metric_alarm: cloudwatch/home?region={region}#alarmsV2:alarm/{name}

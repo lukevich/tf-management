@@ -1,0 +1,10 @@
+@import "../../../../../../styles/functions";
+
+.variables__header {
+  display: flex;
+  align-items: center;
+
+  .count {
+    margin-bottom: setUnit(5)
+  }
+}

@@ -1,0 +1,90 @@
+@import '../../../styles/functions';
+@import '../../../styles/variables';
+
+.wrap {
+    display: inline-block;
+}
+
+.checkbox {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 0;
+
+    input {
+        position: absolute;
+        width: 0;
+        height: 0;
+        overflow: hidden;
+        opacity: 0;
+    }
+
+    div {
+        width: setUnit(15);
+        height: setUnit(15);
+        background: $main-white-color;
+        border: setUnit(1) solid lighten($dark-color, 50);
+        border-radius: setUnit(3);
+
+        padding: setUnit(1);
+
+        cursor: pointer;
+
+        svg {
+            display: none;
+            width: setUnit(11);
+            height: setUnit(12);
+        }
+    }
+
+    &.has_text {
+        padding-left: setUnit(28);
+        white-space: nowrap;
+
+        div {
+            position: absolute;
+            top: setUnit(20);
+            left: 0;
+        }
+
+        span {
+            font-size: setUnit(14);
+        }
+    }
+
+    &.checked {
+        div {
+            background: $main-white-color;
+            border-color: $primary-color;
+
+            svg {
+                display: block;
+
+                fill: none;
+                stroke: $primary-color;
+                stroke-width: 1.5;
+                stroke-linecap: round;
+            }
+        }
+    }
+
+    &.multiple {
+        div {
+            background: $main-white-color;
+            border-color: $primary-color;
+
+            svg {
+                display: block;
+
+                fill: $primary-color;
+                stroke: none;
+            }
+        }
+    }
+
+    &.disabled {
+        div {
+            cursor: not-allowed;
+            opacity: .5;
+        }
+    }
+}

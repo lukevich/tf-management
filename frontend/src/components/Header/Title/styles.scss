@@ -1,0 +1,12 @@
+@import "../../../styles/functions";
+@import "../../../styles/variables";
+
+.title {
+  min-height: setUnit(33.5);
+  color: $dark-color;
+
+  @media screen and (max-width: $mobile) {
+    font-size: setUnit(22);
+    min-height: 0;
+  }
+}

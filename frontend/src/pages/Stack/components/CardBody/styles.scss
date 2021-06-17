@@ -1,0 +1,50 @@
+@import "../../../../styles/variables";
+@import "../../../../styles/functions";
+@import "../../../../styles/mixins";
+
+.group {
+  position: relative;
+
+  .title {
+    display: flex;
+    align-items: baseline;
+  }
+
+  .items {
+    @include box-shadow;
+    border-bottom-color: #fbfcfc;
+    position: relative;
+
+    &.hover {
+      &:hover {
+        @include box-shadow-hover;
+      }
+    }
+
+    .key__value {
+      display: flex;
+      padding-left: 0;
+
+      .key {
+        font-size: setUnit(18);
+        min-width: setUnit(120);
+        padding-left: 0;
+      }
+
+      .value {
+        color: $info-color;
+        display: flex;
+        align-items: center;
+        margin-left: setUnit(10);
+        word-break: break-all;
+      }
+    }
+
+    .item__row {
+      padding: setUnit(10) 0;
+      margin-left: 0;
+      display: flex;
+      flex-wrap: nowrap;
+    }
+  }
+}

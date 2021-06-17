@@ -1,0 +1,46 @@
+@import "../../styles/functions";
+@import "../../styles/variables";
+
+.header {
+  padding: setUnit(15) 0;
+
+  .extends {
+    margin-top: setUnit(15);
+  }
+
+  .return__back {
+    padding-right: 0;
+    display: flex;
+    align-items: center;
+
+    svg {
+      width: setUnit(25);
+      height: setUnit(25);
+      vertical-align: middle;
+
+      fill: $dark-color;
+    }
+  }
+
+  .return__holder {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .title_col {
+
+    &.isback {
+      position: relative;
+      left: -6%;
+
+      @media screen and (max-width: $desktop) {
+        left: -5%;
+      }
+
+      @media screen and (max-width: 870px) {
+        left: 0;
+      }
+    }
+  }
+}

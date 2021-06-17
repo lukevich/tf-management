@@ -1,0 +1,21 @@
+@import "../../../styles/functions";
+@import "../../../styles/variables";
+
+.multiselect {
+  max-width: 100%;
+
+  .input {
+    &>div {
+      &:focus-within {
+        box-shadow: 0 0 0 setUnit(3.2) rgba(0,123,255,.25);
+      }
+      &>div {
+        cursor: pointer;
+
+        &>span {
+          padding-top: 0 !important;
+        }
+      }
+    }
+  }
+}

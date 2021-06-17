@@ -1,0 +1,42 @@
+@import "../../../../../../../styles/variables";
+@import "../../../../../../../styles/functions";
+
+.toggle {
+  width: 100%;
+  padding: setUnit(20);
+  cursor: pointer;
+  background: #d4f5fa;
+  border-bottom: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &:last-child {
+    border-bottom: 1px solid rgba(0,0,0,.125);
+  }
+
+  .count {
+    font-size: setUnit(14);
+    margin-left: setUnit(10);
+    color: $info-color;
+  }
+
+  &:hover {
+    opacity: .8;
+  }
+
+  .arrow {
+    display: flex;
+    align-items: center;
+    transition: .15s linear;
+
+    svg {
+      fill: $info-color;
+    }
+
+    &.opened {
+      transform: rotate(180deg);
+    }
+  }
+}

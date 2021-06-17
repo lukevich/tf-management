@@ -1,0 +1,410 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  UniqueString:
+    Type: String
+    Description: A string added to all resources that must be unique across all stacks.
+  ArtifactsS3BucketName:
+    Type: String
+    Description: S3 bucket with tf management lambda sources
+  ArtifactsS3TfManagementLambdaKey:
+    Type: String
+    Description: S3 bucket key for tf management lambda sources archive
+  MemorySize:
+    Type: Number
+    Description: Tf management lambda function memory size (1024 preferrable)
+    Default: 1024
+    MaxValue: 10240
+    MinValue: 128
+  LambdaLogLevel:
+    Type: String
+    Description: Tf management lambda function log level
+    Default: 'INFO'
+  TfBackendType:
+    Type: String
+    Description: Terraform backend where .tfstate files are stored
+    AllowedValues:
+      - 'S3'
+    Default: 'S3'
+  TfstateS3BucketName:
+    Type: String
+    Description: Terraform backend S3 bucket name
+    Default: 'NONE'
+  TfstateS3BaseLocation:
+    Type: String
+    Description: Terraform backend S3 bucket base location. E.g. 'system/'.
+      Defaults to '', meaning all keys are scanned
+    Default: ''
+  TfstateKeyDelimiter:
+    Type: String
+    Description: Terraform backend key delimiter. For example S3 bucket keys
+      are stored like 'dir1/dir2/.../object_name'
+    Default: '/'
+  CloudProviderType:
+    Type: String
+    Description: Cloud provider where deployed resources are located.
+      Reqiured to provide resource URLs
+    AllowedValues:
+      - 'AWS'
+    Default: 'AWS'
+  HostedZoneDomainName:
+    Type: String
+    Description: Hosted zone domain name.
+  DomainName:
+    Type: String
+    Description: Common domain name for API Gateway and UI S3 bucket.
+      Will be concatenated with HostedZoneDomainName.
+  CertificateArn:
+    Type: String
+    Description: Certificate ARN used to create API Gateway domain name
+  Stage:
+    Type: String
+    Description: API Gateway deployment stage name
+    Default: 'v1'
+  UserEmailAddress:
+    Type: String
+    Description: User email address, a user with email address name will be
+      created, password will be send to the specified email address as well
+
+Conditions:
+  CreateS3BucketAccessPolicy: !Not [!Equals [!Ref TfstateS3BucketName, 'NONE']]
+
+Resources:
+  TfManagementLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: lambda_handler.lambda_handler
+      Role: !GetAtt 'TfManagementLambdaRole.Arn'
+      Code:
+        S3Bucket: !Ref ArtifactsS3BucketName
+        S3Key: !Ref ArtifactsS3TfManagementLambdaKey
+      Runtime: 'python3.8'
+      Environment:
+        Variables:
+          LOG_LEVEL: !Ref LambdaLogLevel
+          TF_BACKEND: !Ref TfBackendType
+          TFSTATE_S3_BUCKET_NAME: !Ref TfstateS3BucketName
+          TFSTATE_S3_BASE_LOCATION: !Ref TfstateS3BaseLocation
+          TFSTATE_KEY_DELIMITER: !Ref TfstateKeyDelimiter
+          CLOUD_PROVIDER_TYPE: !Ref CloudProviderType
+      FunctionName: !Sub 'tf-management-${UniqueString}'
+      MemorySize: !Ref MemorySize
+      Tags:
+        - Key: Name
+          Value: !Sub 'tf-management-${UniqueString}'
+      Timeout: 600
+
+  TfManagementLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - 'lambda.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: 's3-read-access'
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:ListBucket'
+                Resource:
+                  Fn::If:
+                    - CreateS3BucketAccessPolicy
+                    - !Sub 'arn:aws:s3:::${TfstateS3BucketName}'
+                    - !Ref AWS::NoValue
+              - Effect: Allow
+                Action:
+                  - 's3:GetObject'
+                Resource:
+                  Fn::If:
+                    - CreateS3BucketAccessPolicy
+                    - !Sub 'arn:aws:s3:::${TfstateS3BucketName}/*'
+                    - !Ref AWS::NoValue
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource:
+                  - '*'
+  RestApiGateway:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Sub 'tf-management-${UniqueString}'
+
+  RootApiGatewayMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApiGateway
+      ResourceId: !GetAtt 'RestApiGateway.RootResourceId'
+      HttpMethod: 'GET'
+      AuthorizationType: 'NONE'
+      Integration:
+        IntegrationHttpMethod: 'GET'
+        Type: 'HTTP_PROXY'
+        # e.g. http://tf-management-ui.s3-website.{region}.amazonaws.com
+        Uri: !Sub "${UiS3Bucket.WebsiteURL}/"
+  EnvironmentsResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt 'RestApiGateway.RootResourceId'
+      PathPart: 'environments'
+      RestApiId: !Ref RestApiGateway
+  EnvironmentsResourceMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApiGateway
+      ResourceId: !Ref EnvironmentsResource
+      HttpMethod: 'GET'
+      AuthorizationType: 'COGNITO_USER_POOLS'
+      AuthorizationScopes:
+        - 'environments/get'
+      AuthorizerId: !Ref ApiGatewayCognitoAuthorizer
+      Integration:
+        IntegrationHttpMethod: 'POST'
+        Type: 'AWS_PROXY'
+        Uri: !Join
+          - ''
+          - - 'arn:aws:apigateway:'
+            - !Ref 'AWS::Region'
+            - ':lambda:path/2015-03-31/functions/'
+            - !GetAtt 'TfManagementLambda.Arn'
+            - '/invocations'
+
+  LoginResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt 'RestApiGateway.RootResourceId'
+      PathPart: 'login'
+      RestApiId: !Ref RestApiGateway
+  LoginResourceMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApiGateway
+      ResourceId: !Ref LoginResource
+      HttpMethod: 'ANY'
+      AuthorizationType: 'NONE'
+      Integration:
+        IntegrationHttpMethod: 'ANY'
+        Type: 'HTTP_PROXY'
+        # see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-integration.html
+        # for login page link examples
+        Uri: !Join
+          - ''
+          - - !Sub 'https://${CognitoUserPoolDomain}.auth.${AWS::Region}.amazoncognito.com/login?response_type=token'
+            - '&scope=environments/get'
+            - '&client_id='
+            - !Ref CognitoClient
+            - '&redirect_uri='
+            - !Sub "https://${DomainName}.${HostedZoneDomainName}"
+
+  UiProxyResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt 'RestApiGateway.RootResourceId'
+      PathPart: '{proxy+}'
+      RestApiId: !Ref RestApiGateway
+  UiProxyResourceMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref RestApiGateway
+      ResourceId: !Ref UiProxyResource
+      HttpMethod: 'ANY'
+      AuthorizationType: 'NONE'
+      RequestParameters:
+        method.request.path.proxy: true
+      Integration:
+        IntegrationHttpMethod: 'ANY'
+        Type: 'HTTP_PROXY'
+        Uri: !Sub "${UiS3Bucket.WebsiteURL}/{proxy}"
+        RequestParameters:
+          integration.request.path.proxy: 'method.request.path.proxy'
+
+  GatewayResponseMissingAuthToken:
+    Type: AWS::ApiGateway::GatewayResponse
+    Properties:
+      ResponseParameters:
+        gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+        gatewayresponse.header.Location: !Sub "'https://${DomainName}.${HostedZoneDomainName}/login'"
+      ResponseType: 'MISSING_AUTHENTICATION_TOKEN'
+      RestApiId: !Ref RestApiGateway
+      StatusCode: '302'
+  GatewayResponseUnauthorized:
+    Type: AWS::ApiGateway::GatewayResponse
+    Properties:
+      ResponseParameters:
+        gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+        gatewayresponse.header.Location: !Sub "'https://${DomainName}.${HostedZoneDomainName}/login'"
+      ResponseType: 'UNAUTHORIZED'
+      RestApiId: !Ref RestApiGateway
+      StatusCode: '302'
+  GatewayResponseExpiredToken:
+    Type: AWS::ApiGateway::GatewayResponse
+    Properties:
+      ResponseParameters:
+        gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+        gatewayresponse.header.Location: !Sub "'https://${DomainName}.${HostedZoneDomainName}/login'"
+      ResponseType: 'EXPIRED_TOKEN'
+      RestApiId: !Ref RestApiGateway
+      StatusCode: '302'
+  GatewayResponseAccessDenied:
+    Type: AWS::ApiGateway::GatewayResponse
+    Properties:
+      ResponseParameters:
+        gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+        gatewayresponse.header.Location: !Sub "'https://${DomainName}.${HostedZoneDomainName}/login'"
+      ResponseType: 'ACCESS_DENIED'
+      RestApiId: !Ref RestApiGateway
+      StatusCode: '302'
+
+  LambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:invokeFunction
+      FunctionName: !Ref TfManagementLambda
+      Principal: 'apigateway.amazonaws.com'
+      SourceArn: !Join
+        - ''
+        - - 'arn:aws:execute-api:'
+          - !Ref 'AWS::Region'
+          - ':'
+          - !Ref 'AWS::AccountId'
+          - ':'
+          - !Ref 'RestApiGateway'
+          - /*
+
+  ApiGatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - RootApiGatewayMethod
+      - EnvironmentsResourceMethod
+      - LoginResourceMethod
+      - UiProxyResourceMethod
+    Properties:
+      RestApiId: !Ref RestApiGateway
+      StageName: !Ref Stage
+
+  ApiGatewayCognitoAuthorizer:
+    Type: AWS::ApiGateway::Authorizer
+    Properties:
+      Name: 'cognito'
+      RestApiId: !Ref RestApiGateway
+      Type: 'COGNITO_USER_POOLS'
+      IdentitySource: 'method.request.header.Authorization'
+      ProviderARNs:
+        - !GetAtt 'CognitoUserPool.Arn'
+
+  ApiGatewayDomainName:
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      DomainName: !Sub "${DomainName}.${HostedZoneDomainName}"
+      RegionalCertificateArn: !Ref CertificateArn
+      EndpointConfiguration:
+        Types:
+          - 'REGIONAL'
+
+  ApiGatewayDomainMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    DependsOn:
+      ApiGatewayDeployment
+    Properties:
+      DomainName: !Ref ApiGatewayDomainName
+      RestApiId: !Ref RestApiGateway
+      Stage: !Ref Stage
+
+
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: True
+      MfaConfiguration: 'OFF'
+      UserPoolName: !Sub 'tf-management-${UniqueString}'
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 6
+          RequireLowercase: False
+          RequireNumbers: False
+          RequireSymbols: False
+          RequireUppercase: False
+          TemporaryPasswordValidityDays: 30
+
+  CognitoSampleUser:
+    Type: AWS::Cognito::UserPoolUser
+    Properties:
+      Username: !Ref UserEmailAddress
+      UserPoolId: !Ref CognitoUserPool
+      DesiredDeliveryMediums:
+        - 'EMAIL'
+      UserAttributes:
+        - Name: 'email'
+          Value: !Ref UserEmailAddress
+
+  CognitoClient:
+    Type: AWS::Cognito::UserPoolClient
+    DependsOn:
+      - CognitoResourceServer
+    Properties:
+      ClientName: !Sub 'tf-management-${UniqueString}'
+      AllowedOAuthFlows:
+        - 'implicit'
+      AllowedOAuthFlowsUserPoolClient: True
+      AllowedOAuthScopes:
+        - 'environments/get'
+      CallbackURLs:
+        - !Sub "https://${DomainName}.${HostedZoneDomainName}"
+      DefaultRedirectURI: !Sub "https://${DomainName}.${HostedZoneDomainName}"
+      ExplicitAuthFlows:
+        - 'ALLOW_USER_PASSWORD_AUTH'
+        - 'ALLOW_REFRESH_TOKEN_AUTH'
+      SupportedIdentityProviders:
+        - 'COGNITO'
+      UserPoolId: !Ref CognitoUserPool
+      PreventUserExistenceErrors: 'ENABLED'
+
+  CognitoUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: !Sub 'tf-management-${UniqueString}'
+      UserPoolId: !Ref CognitoUserPool
+
+  CognitoResourceServer:
+    Type: AWS::Cognito::UserPoolResourceServer
+    Properties:
+      Identifier: 'environments'
+      Name: 'environments'
+      Scopes:
+        - ScopeDescription: 'Get all environments'
+          ScopeName: 'get'
+      UserPoolId: !Ref CognitoUserPool
+
+
+  UiS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: 'PublicRead'
+      BucketName: !Sub 'tf-management-ui-${UniqueString}'
+      WebsiteConfiguration:
+        IndexDocument: 'index.html'
+
+  DnsRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Sub "${HostedZoneDomainName}."
+      Name: !Sub "${DomainName}.${HostedZoneDomainName}."
+      ResourceRecords:
+        - !Sub "${ApiGatewayDomainName.RegionalDomainName}"
+      TTL: 300
+      Type: CNAME
+
+Outputs:
+  UiS3BucketName:
+    Description: UI S3 Bucket name
+    Value: !Ref UiS3Bucket

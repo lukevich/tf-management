@@ -1,0 +1,9 @@
+@import "../../../styles/functions";
+
+.silent__pending {
+  position: relative;
+  width: setUnit(25);
+  height: setUnit(25);
+  margin-left: auto;
+  margin-right: setUnit(10);
+}

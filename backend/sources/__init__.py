@@ -1,0 +1,1 @@
+from sources.lambda_handler import lambda_handler as tf_management

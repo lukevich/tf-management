@@ -1,0 +1,22 @@
+{
+  "name": "base_location-stack2-env_id",
+  "short_name": "base_location-stack2",
+  "region": "region",
+  "env_id": "env_id",
+  "resources": [
+    {
+      "name": "deleteme-example",
+      "type": "aws_s3_bucket",
+      "arn": "arn:aws:s3:::deleteme-example",
+      "id": "deleteme-example",
+      "url": "https://console.aws.amazon.com/s3/home?region=region&bucket=deleteme-example"
+    }
+  ],
+  "variables": {
+    "env_id": "dev",
+    "region": "us-east-1"
+  },
+  "outputs": { },
+  "metadata": { },
+  "history": [ ]
+}

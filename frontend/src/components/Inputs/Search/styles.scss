@@ -1,0 +1,21 @@
+@import "../../../styles/mixins";
+@import "../../../styles/functions";
+@import "../../../styles/variables";
+
+.input {
+  padding-left: setUnit(35);
+  height: setUnit(40);
+
+  &__wrapper {
+    position: relative;
+    width: 100%;
+    @include flex-vertical-align;
+  }
+
+  &__icon {
+    position: absolute;
+    left: setUnit(10);
+    width: setUnit(20);
+    fill: $dark-color;
+  }
+}

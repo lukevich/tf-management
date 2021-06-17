@@ -1,0 +1,16 @@
+@import "../../../../styles/variables";
+@import "../../../../styles/functions";
+@import "../../../../styles/mixins";
+
+.title {
+  font-size: setUnit(18);
+}
+
+.value {
+  color: $info-color;
+}
+
+.items {
+  @include box-shadow;
+  border-bottom-color: #fbfcfc;
+}
