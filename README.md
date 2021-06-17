@@ -1,5 +1,17 @@
 # Tf-management
 
+## Table of Contents  
+[About The Project](#aboutTheProject)  
+[Demo](#demo)  
+[Architecture](#architecture)  
+[Project Components](#projectComponents)  
+[Backend Storage Assumptions](#backendStorageAssumptions)  
+[Deployment](#deployment)  
+[Configuration](#configuration)  
+[Utils Scripts](#utils)  
+
+
+<a name="aboutTheProject"/>
 
 ### About the project
 
@@ -11,9 +23,18 @@ are deployed at the moment. Terraform variables and deployment history are
 also available (if provided).    
 
 
+<a name="demo"/>
+
+## Demo
+
+[TODO] 
+
+<a name="architecture"/>
+
 ## Architecture
 ![Tf-management](tf-management.png "Tf-management diagram")
 
+<a name="projectComponents"/>
 
 ### Project components
 
@@ -33,8 +54,8 @@ also available (if provided).
     _(Note: util scripts may be adjusted as needed)_
 
 
+<a name="backendStorageAssumptions"/>
 
- 
 ### Backend storage assumptions
 
 1. Tfstate files are stored along with tfvars files and metadata files
@@ -59,7 +80,7 @@ _(Note: base_path might be set to abbreviation of your project/subproject name)_
 }
 ``` 
 
-
+<a name="deployment"/>
 
 ### Deployment
 
@@ -115,6 +136,7 @@ _(Note: base_path might be set to abbreviation of your project/subproject name)_
         . {path_to_utils}/s3/metadata-and-tfvars-upload.sh tfstate_bucket tfvars_file tfvars_key metadata_file metadata_key
         ```
 
+<a name="configuration"/>
 
 ### Configuration
 
@@ -161,6 +183,8 @@ _environment/cloudformation/tf-management.template_):
   "UniqueString": "abc123"
 }
 ```
+
+<a name="utils"/>
 
 ### Util scripts
 
