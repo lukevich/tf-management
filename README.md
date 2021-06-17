@@ -67,7 +67,7 @@ _(Note: base_path might be set to abbreviation of your project/subproject name)_
 3. Metadata is a **json** file that stores history of deployments in the 
    following format (metadata of the latest deployment is inserted into the
    beginning of the list):
-```json
+```
 {
   "history": [
     {
