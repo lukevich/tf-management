@@ -94,7 +94,7 @@ _(Note: base_path might be set to abbreviation of your project/subproject name)_
 
 2. Deploy tf-management:
 
-    - Configure deployment by creating config file (see **Configuration** section)
+    - Configure deployment by creating config file (see [Configuration](#configuration) section)
     - Make sure AWS_DEFAULT_REGION, AWS_PROFILE env variables are set
     - Run the following command:
         ```
@@ -102,7 +102,7 @@ _(Note: base_path might be set to abbreviation of your project/subproject name)_
         ```
 
 3. Configure terraform stacks deployment:  
-    Note: release artifacts contain util scripts (see **Util scripts** section)
+    Note: release artifacts contain util scripts (see [Utils Scripts](#utils) section)
     
     - Make sure all tf stacks have the following backend configuration:
     ```hcl-terraform
