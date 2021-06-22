@@ -22,6 +22,9 @@ User can easily monitor which stacks under which environment in which region
 are deployed at the moment. Terraform variables and deployment history are 
 also available (if provided).    
 
+## Demo
+![demo.gif](demo.gif "demo")
+
 
 <a name="demo"/>
 
