@@ -1,5 +1,17 @@
 # Tf-management
 
+## Table of Contents  
+[About The Project](#aboutTheProject)  
+[Demo](#demo)  
+[Architecture](#architecture)  
+[Project Components](#projectComponents)  
+[Backend Storage Assumptions](#backendStorageAssumptions)  
+[Deployment](#deployment)  
+[Configuration](#configuration)  
+[Utils Scripts](#utils)  
+
+
+<a name="aboutTheProject"/>
 
 ### About the project
 
@@ -10,10 +22,18 @@ User can easily monitor which stacks under which environment in which region
 are deployed at the moment. Terraform variables and deployment history are 
 also available (if provided).    
 
+<a name="demo"/>
+
+## Demo
+![demo.gif](demo.gif "demo")
+
+
+<a name="architecture"/>
 
 ## Architecture
 ![Tf-management](tf-management.png "Tf-management diagram")
 
+<a name="projectComponents"/>
 
 ### Project components
 
@@ -33,8 +53,8 @@ also available (if provided).
     _(Note: util scripts may be adjusted as needed)_
 
 
+<a name="backendStorageAssumptions"/>
 
- 
 ### Backend storage assumptions
 
 1. Tfstate files are stored along with tfvars files and metadata files
@@ -46,7 +66,7 @@ _(Note: base_path might be set to abbreviation of your project/subproject name)_
 3. Metadata is a **json** file that stores history of deployments in the 
    following format (metadata of the latest deployment is inserted into the
    beginning of the list):
-```json
+```
 {
   "history": [
     {
@@ -59,7 +79,7 @@ _(Note: base_path might be set to abbreviation of your project/subproject name)_
 }
 ``` 
 
-
+<a name="deployment"/>
 
 ### Deployment
 
@@ -73,7 +93,7 @@ _(Note: base_path might be set to abbreviation of your project/subproject name)_
 
 2. Deploy tf-management:
 
-    - Configure deployment by creating config file (see **Configuration** section)
+    - Configure deployment by creating config file (see [Configuration](#configuration) section)
     - Make sure AWS_DEFAULT_REGION, AWS_PROFILE env variables are set
     - Run the following command:
         ```
@@ -81,7 +101,7 @@ _(Note: base_path might be set to abbreviation of your project/subproject name)_
         ```
 
 3. Configure terraform stacks deployment:  
-    Note: release artifacts contain util scripts (see **Util scripts** section)
+    Note: release artifacts contain util scripts (see [Utils Scripts](#utils) section)
     
     - Make sure all tf stacks have the following backend configuration:
     ```hcl-terraform
@@ -115,6 +135,7 @@ _(Note: base_path might be set to abbreviation of your project/subproject name)_
         . {path_to_utils}/s3/metadata-and-tfvars-upload.sh tfstate_bucket tfvars_file tfvars_key metadata_file metadata_key
         ```
 
+<a name="configuration"/>
 
 ### Configuration
 
@@ -161,6 +182,8 @@ _environment/cloudformation/tf-management.template_):
   "UniqueString": "abc123"
 }
 ```
+
+<a name="utils"/>
 
 ### Util scripts
 
